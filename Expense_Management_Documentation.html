@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Management System - Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1, h2, h3 { color: #333366; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        img { max-width: 100%; height: auto; margin: 20px 0; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Documentation for Expense Management System</h1>
+    <h2>Overview</h2>
+    <p>This documentation covers the Java-based Expense Management System with user authentication and expense tracking capabilities.</p>
+
+    <h2>Class Documentation</h2>
+    <h3>1. DataBaseConnection.java</h3>
+    <p><strong>Purpose:</strong> Manages database connections</p>
+    <p><strong>Methods:</strong></p>
+    <ul>
+        <li><code>getConnection()</code>: Returns a connection to the MySQL database</li>
+    </ul>
+    <p><strong>Configuration via constants:</strong></p>
+    <pre><code>private static final String URL = "jdbc:mysql://localhost:3306/your_database_name";
+private static final String USER = "your_username";
+private static final String PASSWORD = "your_password";</code></pre>
+
+    <h3>2. LoginFrame.java</h3>
+    <p><strong>Purpose:</strong> Handles user authentication</p>
+    <p><strong>UI Components:</strong></p>
+    <ul>
+        <li>Username and password fields</li>
+        <li>Login button</li>
+        <li>Signup navigation button</li>
+    </ul>
+    <p><strong>Key Methods:</strong></p>
+    <ul>
+        <li>Validates credentials against database</li>
+        <li>On success: Launches ExpenseManager with user ID</li>
+        <li>On failure: Shows error message</li>
+    </ul>
+
+    <h3>3. SignupFrame.java</h3>
+    <p><strong>Purpose:</strong> Handles new user registration</p>
+    <p><strong>UI Components:</strong></p>
+    <ul>
+        <li>Full name, email, username, password fields</li>
+        <li>Registration button</li>
+        <li>Login navigation button</li>
+    </ul>
+    <p><strong>Key Methods:</strong></p>
+    <ul>
+        <li><code>userExists()</code>: Checks for duplicate users</li>
+        <li><code>verifyDataInserted()</code>: Debug helper</li>
+        <li>Validates and inserts new user records</li>
+    </ul>
+
+    <h3>4. ExpenseManager.java</h3>
+    <p><strong>Purpose:</strong> Main application dashboard</p>
+    <p><strong>Features:</strong></p>
+    <ul>
+        <li>Expense management (add/view/delete)</li>
+        <li>Monthly reporting</li>
+        <li>Account management</li>
+    </ul>
+    <p><strong>UI Components:</strong></p>
+    <ul>
+        <li>Card layout for different views</li>
+        <li>Menu bar with: Expenses menu, Reports menu, Account menu (with "Return to Welcome")</li>
+    </ul>
+    <p><strong>Key Methods:</strong></p>
+    <ul>
+        <li><code>showMonthlyReport()</code>: Generates category summaries</li>
+        <li>Expense CRUD operations</li>
+        <li>Navigation between views</li>
+    </ul>
+
+    <h2>Database Schema</h2>
+    <h3>Tables</h3>
+    <h4>account (User accounts)</h4>
+    <pre><code>CREATE TABLE account (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL
+);</code></pre>
+    <h4>expenses (User expenses)</h4>
+    <pre><code>CREATE TABLE expenses (
+    expense_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    description TEXT,
+    expense_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES account(id)
+);</code></pre>
+
+    <h2>Flow Diagrams</h2>
+    <h3>Authentication Flow</h3>
+    <img src="deepseek_mermaid_20250423_91189b.png" alt="Authentication Flow Diagram" />
+
+    <h3>Expense Management Flow</h3>
+    <img src="deepseek_mermaid_20250423_2e916e.png" alt="Expense Management Flow Diagram" />
+
+    <h2>Setup Instructions</h2>
+    <p><strong>Prerequisites:</strong></p>
+    <ul>
+        <li>Java JDK 8+</li>
+        <li>MySQL Server</li>
+        <li>MySQL Connector/J</li>
+    </ul>
+    <p><strong>Database Setup:</strong></p>
+    <pre><code>CREATE DATABASE expense_manager;
+USE expense_manager;
+// Create tables (see schema above)</code></pre>
+    <p><strong>Configuration:</strong> Update DataBaseConnection.java with your:</p>
+    <ul>
+        <li>Database name</li>
+        <li>MySQL username</li>
+        <li>MySQL password</li>
+    </ul>
+    <p><strong>Running the Application:</strong></p>
+    <pre><code>javac *.java
+java LoginFrame</code></pre>
+
+    <h2>Security Considerations</h2>
+    <ul>
+        <li><strong>Password Security:</strong> Stores plain text passwords – use hashing (e.g., BCrypt)</li>
+        <li><strong>SQL Injection:</strong> Uses PreparedStatement – input properly parameterized</li>
+        <li><strong>Session Management:</strong> Basic navigation – no token/session-based management</li>
+    </ul>
+
+    <h2>Extension Points</h2>
+    <ul>
+        <li>Password recovery</li>
+        <li>Expense categories management</li>
+        <li>Data export (CSV/PDF)</li>
+        <li>Charts and visualizations</li>
+        <li>Multi-user expense sharing</li>
+    </ul>
+
+    <h3>Technical Debt:</h3>
+    <ul>
+        <li>Move DB operations to DAO classes</li>
+        <li>Implement MVC separation</li>
+        <li>Add logging framework</li>
+        <li>Connection pooling</li>
+    </ul>
+
+    <h2>Troubleshooting</h2>
+    <ul>
+        <li><strong>Database Connection Problems:</strong> Check service, credentials, connector</li>
+        <li><strong>UI Rendering Issues:</strong> Java version, Swing dependencies</li>
+        <li><strong>Data Not Persisting:</strong> Auto-commit, write permission, SQL exceptions</li>
+    </ul>
+</body>
+</html>
