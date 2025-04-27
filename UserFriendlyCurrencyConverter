@@ -1,0 +1,80 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class UserFriendlyCurrencyConverter {
+
+    private static final Map<String, Double> EXCHANGE_RATES = new HashMap<>();
+    private static final Scanner scanner = new Scanner(System.in);
+    
+    static {
+        // Initialize exchange rates (1 USD = x other currencies)
+        EXCHANGE_RATES.put("USD", 1.0);
+        EXCHANGE_RATES.put("INR", 83.12);
+        EXCHANGE_RATES.put("EUR", 0.92);
+        EXCHANGE_RATES.put("GBP", 0.79);
+        EXCHANGE_RATES.put("JPY", 151.50);
+        EXCHANGE_RATES.put("AUD", 1.52);
+        EXCHANGE_RATES.put("CAD", 1.36);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("MULTI-CURRENCY CONVERTER");
+        System.out.println("========================");
+        
+        while (true) {
+            String sourceCurrency = getValidCurrency("Enter source currency code (or 'exit' to quit): ");
+            if (sourceCurrency == null) break;
+            
+            String targetCurrency = getValidCurrency("Enter target currency code: ");
+            if (targetCurrency == null) break;
+            
+            double amount = getValidAmount();
+            if (amount < 0) continue;
+            
+            double convertedAmount = convertCurrency(amount, sourceCurrency, targetCurrency);
+            System.out.printf("\n%.2f %s = %.2f %s\n\n", amount, sourceCurrency, convertedAmount, targetCurrency);
+        }
+        
+        System.out.println("\nThank you for using the currency converter!");
+        scanner.close();
+    }
+
+    private static String getValidCurrency(String prompt) {
+        while (true) {
+            System.out.println("\nAvailable currencies: " + EXCHANGE_RATES.keySet());
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim().toUpperCase();
+            
+            if (input.equalsIgnoreCase("exit")) {
+                return null;
+            }
+            
+            if (EXCHANGE_RATES.containsKey(input)) {
+                return input;
+            }
+            
+            System.out.println("Invalid currency code '" + input + "'. Please use one of: " + EXCHANGE_RATES.keySet());
+        }
+    }
+
+    private static double getValidAmount() {
+        while (true) {
+            System.out.print("Enter amount to convert: ");
+            try {
+                double amount = Double.parseDouble(scanner.nextLine());
+                if (amount >= 0) {
+                    return amount;
+                }
+                System.out.println("Amount cannot be negative. Please try again.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid amount. Please enter a number.");
+            }
+        }
+    }
+
+    private static double convertCurrency(double amount, String fromCurrency, String toCurrency) {
+        double amountInUSD = amount / EXCHANGE_RATES.get(fromCurrency);
+        return amountInUSD * EXCHANGE_RATES.get(toCurrency);
+    }
+}
